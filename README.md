@@ -1,4 +1,4 @@
-# Semantic-Segmentation-Unet-Tensorflow-keras
+# Semantic Segmentation Unet Tensorflow keras
 | Sr No | Topic                                                    | Notebook                                                     |
 | ----- | -------------------------------------------------------- | ------------------------------------------------------------ |
 | 1.    | Unet Architecture for Satellight Image Segmentation      | [Github](https://nbviewer.jupyter.org/github/ashishpatel26/Semantic-Segmentation-Unet-Tensorflow-keras/blob/main/Notebooks/Unet.ipynb) |
