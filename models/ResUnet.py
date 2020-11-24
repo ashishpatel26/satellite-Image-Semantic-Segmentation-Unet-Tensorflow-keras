@@ -12,14 +12,11 @@ def batch_Norm_Activation(x, BN=False): ## To Turn off Batch Normalization, Chan
     return x
 
 
-def ResUnet(nClasses, input_height=304, input_width=304):
-    
-    filters = 32
-    
-#     encoder
-    
-    inputs = Input(shape=(input_height, input_width, 3))
-    
+def ResUnet(image_size):
+    inputs = Input(shape=(image_size, image_size, 3))
+    filters = 16
+ 
+    # Encoder       
     conv = Conv2D(filters*1, kernel_size= (3,3), padding= 'same', strides= (1,1))(inputs)
     conv = batch_Norm_Activation(conv)
     conv = Conv2D(filters*1, kernel_size= (3,3), padding= 'same', strides= (1,1))(conv)
@@ -66,7 +63,7 @@ def ResUnet(nClasses, input_height=304, input_width=304):
     conv = Conv2D(filters*16, kernel_size= (3,3), padding= 'same', strides= (1,1))(conv)
     
     #decoder
-    
+   
     uconv1 = UpSampling2D((2,2))(conv)
     uconv1 = concatenate([uconv1, output4])
     
@@ -77,7 +74,7 @@ def ResUnet(nClasses, input_height=304, input_width=304):
     shortcut5 = Conv2D(filters*16, kernel_size= (3,3), padding='same', strides=(1,1))(uconv1)
     shortcut5 = batch_Norm_Activation(shortcut5)
     output6 = add([uconv11,shortcut5])
-    
+   
     uconv2 = UpSampling2D((2,2))(output6)
     uconv2 = concatenate([uconv2, output3])
     
@@ -89,10 +86,9 @@ def ResUnet(nClasses, input_height=304, input_width=304):
     shortcut6 = batch_Norm_Activation(shortcut6)
     output7 = add([uconv22,shortcut6])
     
-
     uconv3 = UpSampling2D((2,2))(output7)
     uconv3 = concatenate([uconv3, output2])
-    
+   
     uconv33 = batch_Norm_Activation(uconv3)
     uconv33 = Conv2D(filters*4, kernel_size= (3,3), padding= 'same', strides=(1,1))(uconv33)
     uconv33 = batch_Norm_Activation(uconv33)
@@ -113,18 +109,15 @@ def ResUnet(nClasses, input_height=304, input_width=304):
     output9 = add([uconv44,shortcut8])
     
     output_layer = Conv2D(nClasses, (3, 3), padding="same", activation="sigmoid")(output9)
-    resunet = Model(inputs, output_layer)
-    resunet.compile(optimizer=Adam(lr=1e-4), 
-      loss='binary_crossentropy', 
-      metrics=['accuracy', 
-              tf.keras.metrics.MeanIoU(num_classes=2),
-              tf.keras.metrics.AUC(), 
-              tf.keras.metrics.Precision(top_k=5),
-              tf.keras.metrics.Recall(top_k=5),
-              ])
-   
-    return resunet
+    model = Model(inputs, output_layer)
+  
+    return model
 
 if __name__ == '__main__':
-  model = ResUnet(nClasses = 1)
-  model.summary()
+      model = ResUnet(image_size = 304)
+      metrics = ["accuracy", 
+           tf.keras.metrics.AUC(), 
+           tf.keras.metrics.SensitivityAtSpecificity(0.5), 
+           tf.keras.metrics.SpecificityAtSensitivity(0.5)]
+    model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=metrics)
+    model.summary()

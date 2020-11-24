@@ -3,8 +3,8 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras.models import *
 
-def VGGUnet(nClasses, input_height=304, input_width=304, vgg_weight_path=None):
-    inputs = Input(shape=(input_height, input_width, 3))
+def VGGUnet(image_size, vgg_weight_path=None):
+    inputs = Input((image_size, image_size, 3))
     # Block 1
     x = Conv2D(64, (3, 3), padding='same', name='block1_conv1')(inputs)
     x = BatchNormalization()(x)
@@ -133,23 +133,19 @@ def VGGUnet(nClasses, input_height=304, input_width=304, vgg_weight_path=None):
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
-    x = Conv2D(nClasses, (3, 3), padding='same')(x)
+    x = Conv2D(1, (3, 3), padding='same')(x)
     x = BatchNormalization()(x)
 
-    out = Activation('sigmoid')(x)
+    outputs = Activation('sigmoid')(x)
 
-    vggunet = Model(inputs=inputs, outputs=out)
-    vggunet.compile(optimizer=Adam(lr=1e-4), 
-          loss='binary_crossentropy', 
-          metrics=['accuracy', 
-                  tf.keras.metrics.MeanIoU(num_classes=2),
-                  tf.keras.metrics.AUC(), 
-                  tf.keras.metrics.Precision(top_k=5),
-                  tf.keras.metrics.Recall(top_k=5),
-                  ])
-
-    return vggunet
+    model = Model(inputs=inputs, outputs=outputs)
+    return model
 
 if __name__ == '__main__':
-    model = VGGUnet(nClasses = 1)
+    model = VGGUnet(image_size = 304)
+    metrics = ["accuracy", 
+           tf.keras.metrics.AUC(), 
+           tf.keras.metrics.SensitivityAtSpecificity(0.5), 
+           tf.keras.metrics.SpecificityAtSensitivity(0.5)]
+    model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=metrics)
     model.summary()
