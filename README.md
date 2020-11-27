@@ -1,4 +1,12 @@
-# Semantic Segmentation Unet Tensorflow2 keras
+# Satellight Image Segmentation with UNet and Its Variants
+
+![](https://github.com/ashishpatel26/Semantic-Segmentation-Unet-Tensorflow-keras/blob/main/images/image.png)
+
+This repository contains the Collection of different Unet Variant such as **VggUnet, ResUnet, DenseUnet, Unet. AttUnet, MobileNetUnet, NestedUNet, R2AttUNet, R2UNet, SEUnet, scSEUnet, Unet_Xception_ResNetBlock**
+
+---
+
+**UNet Variant**
 
 | Sr No | Topic                                                        | Notebook                                                     |
 | ----- | ------------------------------------------------------------ | ------------------------------------------------------------ |
